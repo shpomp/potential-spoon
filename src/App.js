@@ -7,12 +7,13 @@ export const App = () => {
     mode: "work",
     breakLength: 5,
     workLength: 25,
-    timerTime: 25 * 60,
+    timerTime: 0.1 * 60,
     timerIsActive: false,
   });
 
   useEffect(() => {
-    let timer = setTimeout(() => {
+    console.log(pomodoro.timerTime);
+    let timer = setInterval(() => {
       if (pomodoro.timerIsActive && pomodoro.timerTime > 0)
         setPomodoro({ ...pomodoro, timerTime: pomodoro.timerTime - 1 });
     }, 1000);
@@ -21,6 +22,13 @@ export const App = () => {
       clearTimeout(timer);
     };
   });
+
+  // useEffect(() => {
+  //   if (pomodoro.timerTime === 0) {
+  //     setTimeout(interval, 1000);
+  //     switchMode();
+  //   }
+  // });
 
   const handleTimeChange = (modeToChange, operation) => {
     console.log(modeToChange, operation);
@@ -58,6 +66,10 @@ export const App = () => {
   };
 
   const handleReset = () => {
+    const sound = document.getElementById("beep");
+    sound.pause();
+    sound.currentTime = 0;
+
     setPomodoro({
       mode: "work",
       breakLength: 5,
@@ -67,52 +79,68 @@ export const App = () => {
     });
   };
 
+  const switchMode = () => {
+    playSound();
+    setPomodoro({
+      ...pomodoro,
+      mode: pomodoro.mode === "work" ? "break" : "work",
+      timerTime:
+        pomodoro.mode === "work"
+          ? pomodoro.breakLength * 60
+          : pomodoro.workLength * 60,
+    });
+  };
+
+  const playSound = () => {
+    const sound = document.getElementById("beep");
+    console.log(sound);
+    sound.play();
+  };
+
   return (
     <div className="App">
       <div id="clock">
         <div id="work">
           <p id="session-label">WORK</p>
           <div className="time-controls">
-            <div id="session-decrement">
-              <button
-                disabled={pomodoro.timerIsActive || pomodoro.workLength === 1}
-                onClick={() => handleTimeChange("work", "dec")}
-              >
-                -
-              </button>
-            </div>
+            <button
+              id="session-decrement"
+              disabled={pomodoro.timerIsActive || pomodoro.workLength === 1}
+              onClick={() => handleTimeChange("work", "dec")}
+            >
+              -
+            </button>
             <p id="session-length">{pomodoro.workLength}</p>
-            <div id="session-increment">
-              <button
-                disabled={pomodoro.timerIsActive || pomodoro.workLength >= 60}
-                onClick={() => handleTimeChange("work", "inc")}
-              >
-                +
-              </button>
-            </div>
+            <button
+              id="session-increment"
+              disabled={pomodoro.timerIsActive || pomodoro.workLength >= 60}
+              onClick={() => handleTimeChange("work", "inc")}
+            >
+              +
+            </button>
           </div>
         </div>
 
         <div id="break">
           <p id="break-label">CHILL</p>
           <div className="time-controls">
-            <div id="break-decrement">
-              <button
-                disabled={pomodoro.timerIsActive || pomodoro.breakLength === 1}
-                onClick={() => handleTimeChange("break", "dec")}
-              >
-                -
-              </button>
-            </div>
+            <button
+              id="break-decrement"
+              disabled={pomodoro.timerIsActive || pomodoro.breakLength === 1}
+              onClick={() => handleTimeChange("break", "dec")}
+            >
+              -
+            </button>
+
             <p id="break-length">{pomodoro.breakLength}</p>
-            <div id="break-increment">
-              <button
-                disabled={pomodoro.timerIsActive || pomodoro.breakLength >= 60}
-                onClick={() => handleTimeChange("break", "inc")}
-              >
-                +
-              </button>
-            </div>
+
+            <button
+              id="break-increment"
+              disabled={pomodoro.timerIsActive || pomodoro.breakLength >= 60}
+              onClick={() => handleTimeChange("break", "inc")}
+            >
+              +
+            </button>
           </div>
         </div>
 
@@ -138,6 +166,11 @@ export const App = () => {
             onClick={() => handleReset()}
           />
         </button>
+
+        <audio
+          id="beep"
+          src={"/Chicken-Clucking-Short-www.fesliyanstudios.com.mp3"}
+        />
       </div>
     </div>
   );
@@ -153,5 +186,5 @@ const formattedTime = (totalSeconds) => {
   if (seconds < 10) {
     seconds = "0" + seconds;
   }
-  return +minutes + ":" + seconds;
+  return minutes + ":" + seconds;
 };

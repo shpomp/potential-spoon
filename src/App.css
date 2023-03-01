@@ -15,6 +15,11 @@ p {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+button {
+  background-color: none;
+  border: none;
+}
+
 #clock {
   display: flex;
   flex-direction: column;
