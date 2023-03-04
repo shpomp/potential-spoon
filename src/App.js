@@ -7,28 +7,28 @@ export const App = () => {
     mode: "work",
     breakLength: 5,
     workLength: 25,
-    timerTime: 0.1 * 60,
+    timerTime: 25 * 60,
     timerIsActive: false,
   });
 
   useEffect(() => {
-    console.log(pomodoro.timerTime);
+    console.log("before", pomodoro.timerTime);
     let timer = setInterval(() => {
-      if (pomodoro.timerIsActive && pomodoro.timerTime > 0)
+      if (pomodoro.timerIsActive && pomodoro.timerTime > 0) {
         setPomodoro({ ...pomodoro, timerTime: pomodoro.timerTime - 1 });
+        console.log("inside", pomodoro.timerTime);
+      }
     }, 1000);
-
+    console.log("after", pomodoro.timerTime);
+    if (pomodoro.timerTime === 0) {
+      setTimeout(() => {
+        switchMode();
+      }, 1000);
+    }
     return () => {
       clearTimeout(timer);
     };
   });
-
-  // useEffect(() => {
-  //   if (pomodoro.timerTime === 0) {
-  //     setTimeout(interval, 1000);
-  //     switchMode();
-  //   }
-  // });
 
   const handleTimeChange = (modeToChange, operation) => {
     console.log(modeToChange, operation);
@@ -88,6 +88,7 @@ export const App = () => {
         pomodoro.mode === "work"
           ? pomodoro.breakLength * 60
           : pomodoro.workLength * 60,
+      timerIsActive: true,
     });
   };
 
@@ -169,7 +170,7 @@ export const App = () => {
 
         <audio
           id="beep"
-          src={"/Chicken-Clucking-Short-www.fesliyanstudios.com.mp3"}
+          src={"/Rooster-Crowing-C-www.fesliyanstudios.com.mp3"}
         />
       </div>
     </div>
